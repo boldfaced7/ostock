@@ -6,6 +6,7 @@ jobs:
       - image: cimg/openjdk:11.0
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Update certificates
           command: sudo apt-get update --allow-releaseinfo-change && sudo apt upgrade -y
