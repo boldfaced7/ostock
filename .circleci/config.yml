@@ -1,0 +1,28 @@
+version: 2.1
+jobs:
+  build-and-test:
+    working_directory: ~/ostock
+    docker:
+      - image: cimg/openjdk:11.0
+    steps:
+      - checkout
+      - run:
+          name: Update certificates
+          command: sudo apt-get update --allow-releaseinfo-change && sudo apt upgrade -y
+      - run:
+          name: Login to DockerHub
+          command: docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD 
+      - run:
+          name: Build and puch Docker images
+          shell: /bin/bash
+          command: |
+            chomd -x ./build.sh
+            ./build.sh
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+    # Inside the workflow, you define the jobs you want to run.
+    jobs:
+      - build-and-test
