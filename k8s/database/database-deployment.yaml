@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: database
+  name: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/backend: "true"
+        io.kompose.service: database
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_DB
+          value: ostock_dev
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_USER
+          value: postgres
+        image: postgres:latest
+        imagePullPolicy: ""
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready -U postgres
+          failureThreshold: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        name: postgres
+        ports:
+        - containerPort: 5432
+        resources: {}
+        volumeMounts:
+        - mountPath: /docker-entrypoint-initdb.d/1-init.sql
+          name: database-claim0
+        - mountPath: /docker-entrypoint-initdb.d/2-data.sql
+          name: database-claim1
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: database-claim0
+        hostPath:
+          path: ./init.sql
+      - name: database-claim1
+        hostPath:
+          path: ./data.sql
+status: {}
