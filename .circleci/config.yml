@@ -16,7 +16,7 @@ jobs:
           name: Build and puch Docker images
           shell: /bin/bash
           command: |
-            chomd -x ./build.sh
+            chmod -x ./build.sh
             ./build.sh
 
 # Invoke jobs via workflows
